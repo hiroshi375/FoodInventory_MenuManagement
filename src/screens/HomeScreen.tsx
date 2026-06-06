@@ -32,6 +32,11 @@ export default function HomeScreen() {
 
         const result = await bootstrapUser();
         setBootstrapData(result);
+
+        if (!result.displayName) {
+          navigation.replace("Profile");
+          return;
+        }
       } catch (e) {
         console.error("bootstrapUser error:", e);
         setErrorMessage("初期設定に失敗しました。ログを確認してください。");
@@ -41,7 +46,7 @@ export default function HomeScreen() {
     };
 
     setup();
-  }, []);
+  }, [navigation]);
 
   const mainMenus: MenuItem[] = [
     {

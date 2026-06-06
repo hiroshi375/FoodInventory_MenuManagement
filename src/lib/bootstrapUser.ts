@@ -6,6 +6,7 @@ export type BootstrapResult = {
   username: string;
   email: string;
   defaultGroupId: string;
+  displayName?: string | null;
 };
 
 export async function bootstrapUser(): Promise<BootstrapResult> {
@@ -34,7 +35,7 @@ export async function bootstrapUser(): Promise<BootstrapResult> {
     const createdUser = await client.models.User.create({
       username,
       email,
-      displayName: email,
+      displayName: "",
       lastLoginAt: new Date().toISOString(),
     });
 
@@ -44,10 +45,13 @@ export async function bootstrapUser(): Promise<BootstrapResult> {
 
     appUser = createdUser.data;
   } else {
-    await client.models.User.update({
+    const updatedLoginUser = await client.models.User.update({
       id: appUser.id,
       lastLoginAt: new Date().toISOString(),
     });
+    if (updatedLoginUser.data) {
+      appUser = updatedLoginUser.data;
+    }
   }
 
   if (appUser.defaultGroupId) {
@@ -56,6 +60,7 @@ export async function bootstrapUser(): Promise<BootstrapResult> {
       username,
       email,
       defaultGroupId: appUser.defaultGroupId,
+      displayName: appUser.displayName,
     };
   }
 
@@ -91,5 +96,6 @@ export async function bootstrapUser(): Promise<BootstrapResult> {
     username,
     email,
     defaultGroupId: groupId,
+    displayName: appUser.displayName,
   };
 }
