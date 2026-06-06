@@ -13,9 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.satouhiroshi.foodinventorymenumanagement",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.satouhiroshi.foodinventorymenumanagement",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
