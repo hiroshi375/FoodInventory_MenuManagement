@@ -77,7 +77,7 @@ export async function bootstrapUser(): Promise<BootstrapResult> {
 
   await client.models.GroupMember.create({
     groupId,
-    userId,
+    userId: appUser.id,
     role: "owner",
     joinedAt: new Date().toISOString(),
   });
