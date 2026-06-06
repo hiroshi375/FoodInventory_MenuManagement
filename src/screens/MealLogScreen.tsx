@@ -171,6 +171,9 @@ export default function MealLogScreen() {
 
         <Card.Actions>
           <Button
+            mode="contained"
+            buttonColor="#ffffff"
+            textColor="#000000"
             onPress={() =>
               navigation.navigate("MealLogEdit", {
                 mealLogId: item.id,

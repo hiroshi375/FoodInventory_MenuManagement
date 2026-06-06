@@ -193,7 +193,7 @@ export default function GroceryListScreen() {
         <Card.Actions>
           <Button
             mode={item.isPurchased ? "outlined" : "contained"}
-            buttonColor={item.isPurchased ? undefined : "#2563eb"}
+            buttonColor={item.isPurchased ? undefined : "#60a5fa"}
             textColor={item.isPurchased ? "#2563eb" : "#ffffff"}
             onPress={() => onTogglePurchased(item)}
           >
@@ -201,6 +201,9 @@ export default function GroceryListScreen() {
           </Button>
 
           <Button
+            mode="contained"
+            buttonColor="#f0f0f0"
+            textColor="#000000"
             onPress={() =>
               navigation.navigate("GroceryListEdit", {
                 groceryListId: item.id,

@@ -167,7 +167,7 @@ export default function HomeScreen() {
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <Text variant="headlineSmall" style={{ marginBottom: 4 }}>
-        FoodInventory Menu Management
+        食べたいもの・食材管理アプリ
       </Text>
 
       <Text style={{ marginBottom: 16 }}>
