@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { ActivityIndicator, Card, Divider, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  Divider,
+  Text,
+} from "react-native-paper";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
+import type { RootStackParamList } from "../navigation/RootNavigator";
 import { client } from "../lib/client";
 import { getAppContext } from "../lib/getAppContext";
-
-type RootStackParamList = {
-  CalendarDayDetail: {
-    date: string;
-  };
-};
 
 type Props = NativeStackScreenProps<RootStackParamList, "CalendarDayDetail">;
 
@@ -33,7 +34,7 @@ type GroceryItem = {
   purchasedAt?: string | null;
 };
 
-export default function CalendarDayDetailScreen({ route }: Props) {
+export default function CalendarDayDetailScreen({ route, navigation }: Props) {
   const { date } = route.params;
 
   const [loading, setLoading] = useState(true);
@@ -99,10 +100,16 @@ export default function CalendarDayDetailScreen({ route }: Props) {
         ),
       );
     } catch (e) {
-      console.error("Calendar detail load error:", e);
+      console.error("Calendar day detail load error:", e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const goToCalendarEdit = () => {
+    navigation.navigate("CalendarEdit", {
+      date,
+    });
   };
 
   if (loading) {
@@ -114,6 +121,14 @@ export default function CalendarDayDetailScreen({ route }: Props) {
       <Text variant="titleLarge" style={{ marginBottom: 12 }}>
         {date}
       </Text>
+
+      <Button
+        mode="contained"
+        onPress={goToCalendarEdit}
+        style={{ marginBottom: 12 }}
+      >
+        この日に予定を追加
+      </Button>
 
       <Card style={{ marginBottom: 12 }}>
         <Card.Content>

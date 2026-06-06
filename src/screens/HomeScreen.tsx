@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -8,6 +8,12 @@ import type { RootStackParamList } from "../navigation/RootNavigator";
 import { bootstrapUser, type BootstrapResult } from "../lib/bootstrapUser";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+type MenuItem = {
+  title: string;
+  description: string;
+  screenName: keyof RootStackParamList;
+};
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -36,6 +42,88 @@ export default function HomeScreen() {
 
     setup();
   }, []);
+
+  const mainMenus: MenuItem[] = [
+    {
+      title: "食べたいメニュー",
+      description: "食べたい料理を登録・確認します。",
+      screenName: "CraveMenu",
+    },
+    {
+      title: "今ある食材",
+      description: "冷蔵庫や保存食材を管理します。",
+      screenName: "FoodInventory",
+    },
+    {
+      title: "買うものリスト",
+      description: "買い物予定の食材を管理します。",
+      screenName: "GroceryList",
+    },
+    {
+      title: "食事の記録",
+      description: "実際に食べたメニューを記録します。",
+      screenName: "MealLog",
+    },
+    {
+      title: "レシピ",
+      description: "登録済みレシピを確認・編集します。",
+      screenName: "Recipe",
+    },
+    {
+      title: "カレンダー",
+      description: "食事・期限・買い物予定を日付で確認します。",
+      screenName: "Calendar",
+    },
+  ];
+
+  const supportMenus: MenuItem[] = [
+    {
+      title: "期限一覧",
+      description: "期限が近い食材を確認します。",
+      screenName: "ExpirationList",
+    },
+    {
+      title: "買うもの自動提案",
+      description: "在庫や食事予定から買うものを提案します。",
+      screenName: "GrocerySuggestion",
+    },
+    {
+      title: "レシピAI提案",
+      description: "食材や希望メニューからレシピを提案します。",
+      screenName: "RecipeSuggestion",
+    },
+    {
+      title: "食事写真AI解析",
+      description: "食事写真から内容を解析します。",
+      screenName: "MealPhotoAnalysis",
+    },
+  ];
+
+  const settingMenus: MenuItem[] = [
+    {
+      title: "プロフィール",
+      description: "ユーザー情報を確認します。",
+      screenName: "Profile",
+    },
+    {
+      title: "グループ管理",
+      description: "共有グループを管理します。",
+      screenName: "Group",
+    },
+  ];
+
+  const renderMenuCard = (item: MenuItem) => (
+    <Card
+      key={item.screenName}
+      style={{ marginBottom: 10 }}
+      onPress={() => navigation.navigate(item.screenName as never)}
+    >
+      <Card.Content>
+        <Text variant="titleMedium">{item.title}</Text>
+        <Text style={{ marginTop: 4 }}>{item.description}</Text>
+      </Card.Content>
+    </Card>
+  );
 
   if (loading) {
     return (
@@ -73,59 +161,40 @@ export default function HomeScreen() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>
-      <Text variant="headlineSmall" style={{ marginBottom: 8 }}>
+      <Text variant="headlineSmall" style={{ marginBottom: 4 }}>
         FoodInventory Menu Management
       </Text>
 
       <Text style={{ marginBottom: 16 }}>
+        食材・買い物・食事・レシピをまとめて管理します。
+      </Text>
+
+      <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+        主要メニュー
+      </Text>
+      {mainMenus.map(renderMenuCard)}
+
+      <Text variant="titleMedium" style={{ marginTop: 12, marginBottom: 8 }}>
+        便利機能
+      </Text>
+      {supportMenus.map(renderMenuCard)}
+
+      <Text variant="titleMedium" style={{ marginTop: 12, marginBottom: 8 }}>
+        設定
+      </Text>
+      {settingMenus.map(renderMenuCard)}
+
+      <Text
+        style={{
+          marginTop: 16,
+          color: "#777",
+          fontSize: 12,
+        }}
+      >
         Default Group ID: {bootstrapData?.defaultGroupId}
       </Text>
 
-      <View style={{ gap: 10 }}>
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("CraveMenu")}
-        >
-          食べたいメニュー
-        </Button>
-
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("FoodInventory")}
-        >
-          今ある食材
-        </Button>
-
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("GroceryList")}
-        >
-          買うものリスト
-        </Button>
-
-        <Button mode="contained" onPress={() => navigation.navigate("MealLog")}>
-          食事の記録
-        </Button>
-
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("Calendar")}
-        >
-          カレンダー
-        </Button>
-
-        <Button mode="contained" onPress={() => navigation.navigate("Recipe")}>
-          レシピ
-        </Button>
-
-        <Button mode="outlined" onPress={() => navigation.navigate("Profile")}>
-          プロフィール
-        </Button>
-
-        <Button mode="outlined" onPress={() => navigation.navigate("Group")}>
-          グループ管理
-        </Button>
-      </View>
+      <View style={{ height: 24 }} />
     </ScrollView>
   );
 }
