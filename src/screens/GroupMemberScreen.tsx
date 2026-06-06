@@ -59,6 +59,7 @@ export default function GroupMemberScreen({ route, navigation }: Props) {
       const users = (userResult.data ?? []) as UserItem[];
 
       const memberItems = (memberResult.data ?? []) as GroupMemberItem[];
+
       console.log("=== GroupMember debug ===");
       console.log("groupId:", groupId);
       console.log("memberItems:", memberItems);
@@ -146,7 +147,7 @@ export default function GroupMemberScreen({ route, navigation }: Props) {
                 ユーザー: {member.displayName}
               </Text>
               {member.email ? (
-                <Text style={{ marginTop: 4 }}>{member.email}</Text>
+                <Text style={{ marginTop: 4 }}>email: {member.email}</Text>
               ) : null}
 
               <Text style={{ marginTop: 4 }}>
