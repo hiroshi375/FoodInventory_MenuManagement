@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { generateRecipeSuggestion } from "../functions/generateRecipeSuggestion/resource";
+import { generateGrocerySuggestion } from "../functions/generateGrocerySuggestion/resource";
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
 adding a new "isDone" field as a boolean. The authorization rule below
@@ -154,6 +155,17 @@ const schema = a
       })
       .returns(a.json())
       .handler(a.handler.function(generateRecipeSuggestion))
+      .authorization((allow) => [allow.authenticated()]),
+
+    generateGrocerySuggestion: a
+      .query()
+      .arguments({
+        menuName: a.string(),
+        ingredients: a.string().array(),
+        category: a.string(),
+      })
+      .returns(a.json())
+      .handler(a.handler.function(generateGrocerySuggestion))
       .authorization((allow) => [allow.authenticated()]),
   })
   .authorization((allow) => [allow.authenticated()]);
