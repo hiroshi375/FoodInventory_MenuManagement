@@ -1242,6 +1242,20 @@
               "isRequired": false
             }
           }
+        },
+        "analyzeMealPhoto": {
+          "name": "analyzeMealPhoto",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "imageKey": {
+              "name": "imageKey",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            }
+          }
         }
       }
     }
@@ -1272,6 +1286,14 @@
             ]
           },
           "ingredientsImage/*": {
+            "authenticated": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "meal-photos/*": {
             "authenticated": [
               "get",
               "list",

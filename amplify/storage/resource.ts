@@ -6,5 +6,6 @@ export const storage = defineStorage({
     "profilePhoto/*": [allow.authenticated.to(["read", "write", "delete"])],
     "menuImage/*": [allow.authenticated.to(["read", "write", "delete"])],
     "ingredientsImage/*": [allow.authenticated.to(["read", "write", "delete"])],
+    "meal-photos/*": [allow.authenticated.to(["read", "write", "delete"])],
   }),
 });
