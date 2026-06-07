@@ -91,8 +91,22 @@ export default function GroupMemberScreen({ route, navigation }: Props) {
       });
 
       const sortedMembers = displayMembers.sort((a, b) => {
+        const roleOrder: Record<string, number> = {
+          owner: 1,
+          admin: 2,
+          member: 3,
+        };
+
+        const aRoleOrder = roleOrder[a.role] ?? 99;
+        const bRoleOrder = roleOrder[b.role] ?? 99;
+
+        if (aRoleOrder !== bRoleOrder) {
+          return aRoleOrder - bRoleOrder;
+        }
+
         const aDate = a.joinedAt ?? "";
         const bDate = b.joinedAt ?? "";
+
         return aDate.localeCompare(bDate);
       });
 
@@ -141,14 +155,19 @@ export default function GroupMemberScreen({ route, navigation }: Props) {
         members.map((member) => (
           <Card key={member.id} style={{ marginBottom: 12 }}>
             <Card.Content>
-              <Text variant="titleMedium">{getRoleLabel(member.role)}</Text>
+              <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
+                {member.displayName}
+              </Text>
+
+              {member.email ? (
+                <Text style={{ marginTop: 4, color: "#666" }}>
+                  {member.email}
+                </Text>
+              ) : null}
 
               <Text style={{ marginTop: 8 }}>
-                ユーザー: {member.displayName}
+                権限: {getRoleLabel(member.role)}
               </Text>
-              {member.email ? (
-                <Text style={{ marginTop: 4 }}>email: {member.email}</Text>
-              ) : null}
 
               <Text style={{ marginTop: 4 }}>
                 参加日: {formatDate(member.joinedAt)}

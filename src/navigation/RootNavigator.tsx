@@ -78,10 +78,15 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function RootNavigator() {
+type Props = {
+  initialRouteName?: keyof RootStackParamList;
+};
+
+export default function RootNavigator({ initialRouteName = "Home" }: Props) {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName={initialRouteName}>
+        {/* 既存の Stack.Screen はそのまま */}
         <Stack.Screen
           name="Home"
           component={HomeScreen}
