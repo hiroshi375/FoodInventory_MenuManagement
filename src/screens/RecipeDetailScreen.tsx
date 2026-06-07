@@ -35,8 +35,21 @@ const formatJsonList = (value: unknown): string[] => {
       return [value];
     }
   }
-  if (Array.isArray(value)) {
-    return value.map((item) => {
+
+  if (
+    typeof parsedValue === "object" &&
+    parsedValue !== null &&
+    "items" in parsedValue
+  ) {
+    const items = (parsedValue as { items?: unknown }).items;
+
+    if (Array.isArray(items)) {
+      return items.map((item) => String(item));
+    }
+  }
+
+  if (Array.isArray(parsedValue)) {
+    return parsedValue.map((item) => {
       if (typeof item === "string") return item;
 
       if (typeof item === "object" && item !== null) {
@@ -66,7 +79,7 @@ const formatJsonList = (value: unknown): string[] => {
     });
   }
 
-  return [String(value)];
+  return [String(parsedValue)];
 };
 
 export default function RecipeDetailScreen() {

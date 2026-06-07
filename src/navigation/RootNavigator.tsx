@@ -30,6 +30,9 @@ import RecipeDetailScreen from "../screens/RecipeDetailScreen";
 import RecipeEditScreen from "../screens/RecipeEditScreen";
 import RecipeSuggestionScreen from "../screens/RecipeSuggestionScreen";
 
+import SettingsScreen from "../screens/SettingsScreen";
+import AiSuggestionReviewScreen from "../screens/AiSuggestionReviewScreen";
+
 export type RootStackParamList = {
   Home: undefined;
 
@@ -60,6 +63,17 @@ export type RootStackParamList = {
   RecipeDetail: { recipeId: string };
   RecipeEdit: { recipeId?: string } | undefined;
   RecipeSuggestion: { menuName?: string } | undefined;
+
+  Settings: undefined;
+  AiSuggestionReview: {
+    suggestion: {
+      title: string;
+      description?: string;
+      category?: string;
+      ingredients: string[];
+      steps: string[];
+    };
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -184,6 +198,16 @@ export default function RootNavigator() {
           name="RecipeSuggestion"
           component={RecipeSuggestionScreen}
           options={{ title: "レシピAI提案" }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ title: "設定" }}
+        />
+        <Stack.Screen
+          name="AiSuggestionReview"
+          component={AiSuggestionReviewScreen}
+          options={{ title: "AI提案レビュー" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

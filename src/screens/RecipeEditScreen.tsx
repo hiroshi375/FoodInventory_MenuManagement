@@ -39,8 +39,20 @@ const formatJsonArrayText = (value: unknown) => {
     }
   }
 
-  if (Array.isArray(value)) {
-    return value
+  if (
+    typeof parsedValue === "object" &&
+    parsedValue !== null &&
+    "items" in parsedValue
+  ) {
+    const items = (parsedValue as { items?: unknown }).items;
+
+    if (Array.isArray(items)) {
+      return items.map((item) => String(item)).join("\n");
+    }
+  }
+
+  if (Array.isArray(parsedValue)) {
+    return parsedValue
       .map((item) => {
         if (typeof item === "string") return item;
 
@@ -66,7 +78,7 @@ const formatJsonArrayText = (value: unknown) => {
       .join("\n");
   }
 
-  return String(value);
+  return String(parsedValue);
 };
 
 const validateNumber = (
@@ -253,8 +265,13 @@ export default function RecipeEditScreen() {
         cookingTimeMinutes: toIntegerOrUndefined(cookingTimeMinutes),
         servings: toIntegerOrUndefined(servings),
 
-        ingredients: JSON.stringify(parseJsonArrayText(ingredientsText)),
-        steps: JSON.stringify(parseJsonArrayText(stepsText)),
+        ingredients: JSON.stringify({
+          items: parseJsonArrayText(ingredientsText),
+        }) as any,
+
+        steps: JSON.stringify({
+          items: parseJsonArrayText(stepsText),
+        }) as any,
 
         calories: toIntegerOrUndefined(calories),
         protein: toFloatOrUndefined(protein),

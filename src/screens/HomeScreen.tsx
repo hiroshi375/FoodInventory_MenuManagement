@@ -106,14 +106,10 @@ export default function HomeScreen() {
 
   const settingMenus: MenuItem[] = [
     {
-      title: "プロフィール",
-      description: "ユーザー情報を確認します。",
-      screenName: "Profile",
-    },
-    {
-      title: "グループ管理",
-      description: "共有グループを管理します。",
-      screenName: "Group",
+      title: "設定",
+      description:
+        "プロフィール、グループ、メンバー管理、サインアウトを行います。",
+      screenName: "Settings",
     },
   ];
 
@@ -125,7 +121,15 @@ export default function HomeScreen() {
     >
       <Card.Content>
         <Text variant="titleMedium">{item.title}</Text>
-        <Text style={{ marginTop: 4 }}>{item.description}</Text>
+        <Text
+          style={{
+            marginTop: 4,
+            fontSize: 12,
+            color: "#666",
+          }}
+        >
+          {item.description}
+        </Text>
       </Card.Content>
     </Card>
   );
