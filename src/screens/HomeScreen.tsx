@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -13,6 +13,7 @@ type MenuItem = {
   title: string;
   description: string;
   screenName: keyof RootStackParamList;
+  icon: any;
 };
 
 export default function HomeScreen() {
@@ -53,31 +54,37 @@ export default function HomeScreen() {
       title: "食べたいメニュー",
       description: "食べたい料理を登録・確認します。",
       screenName: "CraveMenu",
+      icon: require("../../assets/menu-icons/crave-menu.png"),
     },
     {
       title: "今ある食材",
       description: "冷蔵庫や保存食材を管理します。",
       screenName: "FoodInventory",
+      icon: require("../../assets/menu-icons/food-inventory.png"),
     },
     {
       title: "買うものリスト",
       description: "買い物予定の食材を管理します。",
       screenName: "GroceryList",
+      icon: require("../../assets/menu-icons/grocery-list.png"),
     },
     {
       title: "食事の記録",
       description: "実際に食べたメニューを記録します。",
       screenName: "MealLog",
+      icon: require("../../assets/menu-icons/meal-log.png"),
     },
     {
       title: "レシピ",
       description: "登録済みレシピを確認・編集します。",
       screenName: "Recipe",
+      icon: require("../../assets/menu-icons/recipe.png"),
     },
     {
       title: "カレンダー",
       description: "食事・期限・買い物予定を日付で確認します。",
       screenName: "Calendar",
+      icon: require("../../assets/menu-icons/calendar.png"),
     },
   ];
 
@@ -86,21 +93,25 @@ export default function HomeScreen() {
       title: "期限一覧",
       description: "期限が近い食材を確認します。",
       screenName: "ExpirationList",
+      icon: require("../../assets/menu-icons/expiration-list.png"),
     },
     {
       title: "買うもの自動提案",
       description: "在庫や食事予定から買うものを提案します。",
       screenName: "GrocerySuggestion",
+      icon: require("../../assets/menu-icons/grocery-suggestion.png"),
     },
     {
       title: "レシピAI提案",
       description: "食材や希望メニューからレシピを提案します。",
       screenName: "RecipeSuggestion",
+      icon: require("../../assets/menu-icons/recipe-suggestion.png"),
     },
     {
       title: "食事写真AI解析",
       description: "食事写真から内容を解析します。",
       screenName: "MealPhotoAnalysis",
+      icon: require("../../assets/menu-icons/meal-photo-analysis.png"),
     },
   ];
 
@@ -110,6 +121,7 @@ export default function HomeScreen() {
       description:
         "プロフィール、グループ、メンバー管理、サインアウトを行います。",
       screenName: "Settings",
+      icon: require("../../assets/menu-icons/settings.png"),
     },
   ];
 
@@ -119,17 +131,45 @@ export default function HomeScreen() {
       style={{ marginBottom: 10 }}
       onPress={() => navigation.navigate(item.screenName as never)}
     >
-      <Card.Content>
-        <Text variant="titleMedium">{item.title}</Text>
-        <Text
+      <Card.Content
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View style={{ flex: 1, paddingRight: 12 }}>
+          <Text variant="titleMedium">{item.title}</Text>
+          <Text
+            style={{
+              marginTop: 4,
+              fontSize: 12,
+              color: "#666",
+            }}
+          >
+            {item.description}
+          </Text>
+        </View>
+        <View
           style={{
-            marginTop: 4,
-            fontSize: 12,
-            color: "#666",
+            width: 56,
+            height: 56,
+            borderRadius: 14,
+            overflow: "hidden",
+            backgroundColor: "#f3f4f6",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {item.description}
-        </Text>
+          <Image
+            source={item.icon}
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 14,
+            }}
+            resizeMode="cover"
+          />
+        </View>
       </Card.Content>
     </Card>
   );
