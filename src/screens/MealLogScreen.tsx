@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
-import { Alert, FlatList, View } from "react-native";
-import { Button, Card, FAB, Text } from "react-native-paper";
+import { Alert, FlatList, View, Image } from "react-native";
+import { Card, FAB, Text } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -8,40 +8,11 @@ import { client } from "../lib/client";
 import { getAppContext } from "../lib/getAppContext";
 import type { RootStackParamList } from "../navigation/RootNavigator";
 import type { Schema } from "../../amplify/data/resource";
+import { getUrl } from "aws-amplify/storage";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type MealLog = Schema["MealLog"]["type"];
-
-const getMealTypeLabel = (mealType?: string | null) => {
-  switch (mealType) {
-    case "breakfast":
-      return "朝食";
-    case "lunch":
-      return "昼食";
-    case "dinner":
-      return "夕食";
-    case "snack":
-      return "間食";
-    default:
-      return "未設定";
-  }
-};
-
-const getMealTypeCardColor = (mealType?: string | null) => {
-  switch (mealType) {
-    case "breakfast":
-      return "#eff6ff"; // 薄い青
-    case "lunch":
-      return "#f0fdf4"; // 薄い緑
-    case "dinner":
-      return "#fef3c7"; // 薄い黄
-    case "snack":
-      return "#fdf2f8"; // 薄いピンク
-    default:
-      return "#ffffff";
-  }
-};
 
 const formatDateTime = (value?: string | null) => {
   if (!value) return "未設定";
@@ -58,9 +29,33 @@ const formatDateTime = (value?: string | null) => {
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
 };
 
-const formatNumber = (value?: number | null) => {
-  if (value == null) return "未設定";
-  return String(value);
+const formatMealType = (value?: string | null) => {
+  switch (value) {
+    case "breakfast":
+      return "朝食";
+    case "lunch":
+      return "昼食";
+    case "dinner":
+      return "夕食";
+    case "snack":
+      return "間食";
+    default:
+      return value ?? "";
+  }
+};
+
+const hasNutrition = (item: {
+  calories?: number | null;
+  protein?: number | null;
+  fat?: number | null;
+  carbs?: number | null;
+}) => {
+  return (
+    (item.calories !== null && item.calories !== undefined) ||
+    (item.protein !== null && item.protein !== undefined) ||
+    (item.fat !== null && item.fat !== undefined) ||
+    (item.carbs !== null && item.carbs !== undefined)
+  );
 };
 
 export default function MealLogScreen() {
@@ -68,6 +63,10 @@ export default function MealLogScreen() {
 
   const [mealLogs, setMealLogs] = useState<MealLog[]>([]);
   const [loading, setLoading] = useState(false);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({}); // mealLogId -> imageUrl(表示用画像URL)
+  const [imageLoadErrors, setImageLoadErrors] = useState<
+    Record<string, boolean>
+  >({});
 
   const loadMealLogs = useCallback(async () => {
     try {
@@ -90,6 +89,7 @@ export default function MealLogScreen() {
       });
 
       setMealLogs(sortedMealLogs);
+      await loadImageUrls(sortedMealLogs);
     } catch (e: any) {
       console.error("loadMealLogs error:", e);
 
@@ -143,7 +143,7 @@ export default function MealLogScreen() {
       <Card
         style={{
           marginBottom: 10,
-          backgroundColor: getMealTypeCardColor(item.mealType),
+          borderRadius: 12,
         }}
         onPress={() =>
           navigation.navigate("MealLogEdit", {
@@ -152,48 +152,114 @@ export default function MealLogScreen() {
         }
       >
         <Card.Content>
-          <Text variant="titleMedium">{item.menuName}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+          >
+            {imageUrls[item.id] && !imageLoadErrors[item.id] ? (
+              <Image
+                source={{ uri: imageUrls[item.id] }}
+                style={{
+                  width: 96,
+                  height: 96,
+                  borderRadius: 10,
+                  marginRight: 12,
+                  backgroundColor: "#e5e7eb",
+                }}
+                resizeMode="cover"
+                onError={() => {
+                  setImageLoadErrors((prev) => ({
+                    ...prev,
+                    [item.id]: true,
+                  }));
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  width: 96,
+                  height: 96,
+                  borderRadius: 10,
+                  marginRight: 12,
+                  backgroundColor: "#e5e7eb",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "#777", fontSize: 12 }}>画像なし</Text>
+              </View>
+            )}
 
-          {item.comment ? (
-            <Text style={{ marginTop: 4 }}>{item.comment}</Text>
-          ) : null}
+            <View style={{ flex: 1 }}>
+              <Text
+                variant="titleMedium"
+                style={{ fontWeight: "bold" }}
+                numberOfLines={1}
+              >
+                {item.menuName}
+              </Text>
 
-          <View style={{ marginTop: 8 }}>
-            <Text>食事日時：{formatDateTime(item.mealDate)}</Text>
-            <Text>食事種別：{getMealTypeLabel(item.mealType)}</Text>
-            <Text>カロリー：{formatNumber(item.calories)} kcal</Text>
-            <Text>
-              PFC：たんぱく質 {formatNumber(item.protein)} g / 脂質{" "}
-              {formatNumber(item.fat)} g / 炭水化物 {formatNumber(item.carbs)} g
-            </Text>
+              <Text style={{ marginTop: 4, color: "#666", fontSize: 12 }}>
+                {formatMealType(item.mealType)} /{" "}
+                {formatDateTime(item.mealDate)}
+              </Text>
+
+              {item.comment ? (
+                <Text style={{ marginTop: 6, fontSize: 13 }} numberOfLines={2}>
+                  {item.comment}
+                </Text>
+              ) : null}
+
+              {hasNutrition(item) ? (
+                <View
+                  style={{
+                    marginTop: 8,
+                    padding: 8,
+                    borderRadius: 8,
+                    backgroundColor: "#f3f4f6",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold", fontSize: 13 }}>
+                    {item.calories ?? "-"} kcal
+                  </Text>
+
+                  <Text style={{ marginTop: 3, fontSize: 12 }}>
+                    P: {item.protein ?? "-"}g　F: {item.fat ?? "-"}g　C:{" "}
+                    {item.carbs ?? "-"}g
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </Card.Content>
-
-        <Card.Actions>
-          <Button
-            mode="contained"
-            buttonColor="#ffffff"
-            textColor="#000000"
-            onPress={() =>
-              navigation.navigate("MealLogEdit", {
-                mealLogId: item.id,
-              })
-            }
-          >
-            編集
-          </Button>
-
-          <Button
-            mode="contained"
-            buttonColor="#5f6368"
-            textColor="#ffffff"
-            onPress={() => onDelete(item.id)}
-          >
-            削除
-          </Button>
-        </Card.Actions>
       </Card>
     );
+  };
+
+  const loadImageUrls = async (
+    items: Array<{ id: string; menuImageUrl?: string | null }>,
+  ) => {
+    const urls: Record<string, string> = {};
+
+    await Promise.all(
+      items.map(async (item) => {
+        if (!item.menuImageUrl) return;
+
+        try {
+          const result = await getUrl({
+            path: item.menuImageUrl,
+          });
+
+          urls[item.id] = result.url.toString();
+        } catch (e) {
+          console.error("MealLog image getUrl error:", e);
+        }
+      }),
+    );
+    setImageLoadErrors({});
+    setImageUrls(urls);
   };
 
   return (
